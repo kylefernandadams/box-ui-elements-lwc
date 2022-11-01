@@ -1,0 +1,49 @@
+<apex:page lightningStylesheets="true" controller="BoxElementsController">
+    <apex:slds />
+    <apex:includeScript value="{!URLFOR($Resource.explorer, '/16.0.0/en-US/explorer.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.explorer, '/16.0.0/en-US/explorer.css')}" />
+    <body style="height: 615px" onload="init()" />       
+    
+    <script type="text/javascript">
+        function init() {
+            const folderId = '{!$CurrentPage.parameters.folderId}';
+            const downscopedToken = '{!$CurrentPage.parameters.downscopedToken}';
+
+            // Instantiate Content Explorer UI Element
+            const explorerContainer = document.querySelector('#explorer-container')
+            const explorer = new Box.ContentExplorer();
+            const logoUrl = "{!URLFOR($Resource.logos, '/box.png')}";
+            explorer.show(folderId, downscopedToken, {
+                container: explorerContainer,
+                logoUrl: logoUrl,
+                autoFocus: true,
+                canPreview: true,
+                canDownload: true,
+                canUpload: true,
+                canCreateNewFolder: true,
+                canDelete: true,
+                canRename: true,
+                canShare: true,
+                canSetShareAccess: true,
+                contentPreviewProps: {
+                    showAnnotations: true,
+                    showDownload: true,
+                    contentSidebarProps: {
+                        detailsSidebarProps: {
+                            hasAccessStats: true,
+                            hasClassification: true,
+                            hasNotices: true,
+                            hasProperties: true,
+                            hasRetentionPolicy: true,
+                            hasVersions: true,
+                        },
+                        hasActivityFeed: true,
+                        hasMetadata: true,
+                        hasSkills: true,
+                        hasVersions: true,
+                    }
+                }
+            });
+        }
+    </script>
+</apex:page>

@@ -1,0 +1,22 @@
+<apex:page lightningStylesheets="true" controller="BoxElementsController">
+    <apex:slds />
+    <apex:includeScript value="{!URLFOR($Resource.uploader, '/16.0.0/en-US/uploader.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.uploader, '/16.0.0/en-US/uploader.css')}" />
+    <body style="height: 515px" onload="init()" />       
+    
+    <script type="text/javascript">
+        function init() {
+            const folderId = '{!$CurrentPage.parameters.folderId}';
+            const downscopedToken = '{!$CurrentPage.parameters.downscopedToken}';
+
+            // Instantiate Content Uploader UI Element
+            const uploaderContainer = document.querySelector('#uploader-container')
+            const uploader = new Box.ContentUploader();
+            const logoUrl = "{!URLFOR($Resource.logos, '/box.png')}";
+            uploader.show(folderId, downscopedToken, {
+                container: uploaderContainer,
+                logoUrl: logoUrl
+            });
+        }
+    </script>
+</apex:page>
