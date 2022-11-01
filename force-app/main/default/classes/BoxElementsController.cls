@@ -12,12 +12,11 @@ public with sharing class BoxElementsController {
     public static Map<String, String> downscopeToken(String resourceType, String recordId, String scopes) {
         box.Toolkit boxToolkit = new box.Toolkit();
 
-        // Get the pageref and assoc params
-        Pagereference pageRef = boxToolkit.getFolderUrl(recordId, true);
-        Map<String, String> params = pageRef.getParameters();
-        String parentToken = params.get('login_token');
+        // Get userId and folderId from FRUP record
         box__FRUP__c frup = [SELECT box__Folder_ID__c, box__Record_ID__c, box__Box_user__c FROM box__FRUP__c WHERE box__Record_ID__c = :recordId AND box__Box_user__c != NULL LIMIT 1];
         String userId = frup.box__Box_user__c;
+        String folderId = frup.box__Folder_ID__c;
+
         System.debug('Found user id: ' + userId);
 
         // Create Client Credentials Grant map
@@ -34,10 +33,8 @@ public with sharing class BoxElementsController {
 
         // Create map for downscoped token request
         String resource = 'https://api.box.com/2.0/' + resourceType;
-        String folderId;
         Map<String, String> downscopeTokenMap = new Map<String, String>();
         if(resourceType.endsWithIgnoreCase('folders')) {
-            folderId = frup.box__Folder_ID__c;
             System.debug('Found folder with id: ' + folderId);
             resource += '/' + folderId;
             downscopeTokenMap.put('resource', resource);
@@ -60,7 +57,7 @@ public with sharing class BoxElementsController {
         return buieMap;
     }
 
-    
+
 
     private static String getAccessToken(String encodedUrl) {
         HttpRequest httpRequest = new HttpRequest();
