@@ -8,6 +8,30 @@ public with sharing class BoxElementsController {
     public static final String TOKEN_URL_STRING = 'https://api.box.com/oauth2/token';
     public static final String GET_CURRENT_USER_URL = 'https://api.box.com/2.0/users/me';
 
+    public string lexOrigin {get{ return URL.getOrgDomainUrl().toExternalForm().split('\\.')[0] + '.lightning.force.com';} set;}
+
+    @AuraEnabled(cacheable = true)
+    public static string getVFOrigin() {
+        string vfOrigin = '';
+        string baseURL = URL.getOrgDomainUrl().toExternalForm(); // Expected Format = https://domain.my.salesforce.com
+
+        // Expected Format for DE, Sandbox & Production ORgs = https://domain--c.visualforce.com
+        vfOrigin = baseURL.split('.my.')[0] + '--c.' + 'visualforce.com';
+
+        /* ********* Below odd Discrepancy was found while implementing this in a Trailhead Playground ***********
+        Organization oOrg = [SELECT InstanceName, IsSandbox, OrganizationType FROM Organization LIMIT 1];
+        if(oOrg.OrganizationType == 'Developer Edition'){
+        // Expected Format for Trailhead Playground DE Org = https://domain--c.ap4.visual.force.com
+        vfOrigin = baseURL.split('.my.')[0]+'--c.'+oOrg.InstanceName.toLowercase()+'.visual.force.com';
+        } else {
+        // Expected Format for personal DE, Sandbox & Production Orgs = https://domain--c.visualforce.com
+        vfOrigin = baseURL.split('.my.')[0]+'--c.'+'visualforce.com';
+        }  */
+
+        return vfOrigin;
+    }
+
+
     @AuraEnabled()
     public static Map<String, String> downscopeToken(String resourceType, String recordId, String scopes) {
         box.Toolkit boxToolkit = new box.Toolkit();

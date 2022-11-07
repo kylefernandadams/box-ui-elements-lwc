@@ -5,18 +5,61 @@
     <body style="height: 515px" onload="init()" />       
     
     <script type="text/javascript">
-        function init() {
-            const folderId = '{!$CurrentPage.parameters.folderId}';
-            const downscopedToken = '{!$CurrentPage.parameters.downscopedToken}';
+        let uploader = new Box.ContentUploader();
 
-            // Instantiate Content Uploader UI Element
-            const uploaderContainer = document.querySelector('#uploader-container')
-            const uploader = new Box.ContentUploader();
-            const logoUrl = "{!URLFOR($Resource.logos, '/box.png')}";
-            uploader.show(folderId, downscopedToken, {
-                container: uploaderContainer,
-                logoUrl: logoUrl
-            });
+        function init() {
+                const folderId = '{!$CurrentPage.parameters.folderId}';
+                const downscopedToken = '{!$CurrentPage.parameters.downscopedToken}';
+
+                // Instantiate Content Uploader UI Element
+                const uploaderContainer = document.querySelector('#uploader-container')
+                const logoUrl = "{!URLFOR($Resource.logos, '/box.png')}";
+                
+                
+                uploader.show(folderId, downscopedToken, {
+                    container: uploaderContainer,
+                    logoUrl: logoUrl,
+                    requestInterceptor: filterFileTypes,
+                    responseInterceptor: handleError
+                });
+                       
+        }
+        function filterFileTypes(config) {
+            console.log('Found config: ', config);
+            
+            const method = config.method;
+            if (method === 'options') {
+                const fileName = config.data.name;
+                console.log('Found file: ', fileName);
+
+                const fileExtension = fileName.split(".").pop();
+                console.log('With extension: ', fileExtension);
+
+                const allowedExtensions =  ['pdf','docx'];
+
+                console.log('Attempting to block file types: ', config)
+                if(!allowedExtensions.includes(fileExtension)) {
+                    config.method='get';
+                    // This is just an invalid URL that goes nowhere and will throw 404 error
+                    config.url = 'https://api.box.com/2.0/files/badextension';
+                }
+            }
+            
+            return config;
+        }
+
+        function handleError(config) {
+            console.log('Found response config: ', config);
+
+            const lexOrigin = '{!lexOrigin}';
+            console.log('Found lwc origin: ', lexOrigin);
+            const message = {
+                title: 'Failed to Upload',
+                errorMessage: 'File type not allowed!',
+                variant: 'error'
+            };
+            
+            window.parent.postMessage(message, lexOrigin)
         }
     </script>
 </apex:page>

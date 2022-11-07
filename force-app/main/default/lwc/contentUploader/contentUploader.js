@@ -1,5 +1,9 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api, wire } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+
 import downscopeToken from '@salesforce/apex/BoxElementsController.downscopeToken';
+import getVFOrigin from '@salesforce/apex/BoxElementsController.getVFOrigin';
+
 
 export default class ContentUploader extends LightningElement {
     @api recordId
@@ -9,8 +13,13 @@ export default class ContentUploader extends LightningElement {
     @api downscopedToken;
 
     error;
-    
+
+    @wire(getVFOrigin)
+    vfOrigin;
+
     connectedCallback() {    
+        window.addEventListener('message' , this.handleVFResponse.bind(this));
+
         // Call apex method to get downscoped token
         downscopeToken({
             resourceType: 'folders',
@@ -28,5 +37,17 @@ export default class ContentUploader extends LightningElement {
             this.error = error;
             console.log('Found error: ', error);
         });
+    }
+
+    handleVFResponse(message) {
+        if (message.origin === this.vfOrigin.data) {
+            const messageData = message.data;
+            const toastEvent = new ShowToastEvent({
+                title: messageData.title,
+                message: messageData.errorMessage,
+                variant: messageData.variant,
+            });
+            this.dispatchEvent(toastEvent);
+        }
     }
 }
