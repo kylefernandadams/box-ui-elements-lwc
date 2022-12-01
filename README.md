@@ -13,6 +13,7 @@ The Box UI Elements LWC project provides sample code to illustrate wrapping Box 
 6. Open the source from this repo in VS Code.
 7. Create a [JWT Box App](https://developer.box.com/guides/authentication/jwt/) with Client Credentials Auth
 8. Update the [BOX_CLIENT_ID](force-app/main/default/classes/BoxElementsController.cls#L2) and [BOX_CLIENT_SECRET](force-app/main/default/classes/BoxElementsController.cls#L3) variables in the BoxElementsController.cls
+* Note: This will change. I plan on moving this logic over to Custom Settings or Custom Metadata Types
 9. In VS Code, use the cmd+shift+p shortcut and select SFDX: Authorize Org
 10. Confirm you've successfully authorized your org by listing orgs and their associated status:
 ```
