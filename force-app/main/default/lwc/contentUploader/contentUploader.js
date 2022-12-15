@@ -6,11 +6,14 @@ import getVFOrigin from '@salesforce/apex/BoxElementsController.getVFOrigin';
 
 
 export default class ContentUploader extends LightningElement {
+    @api objectApiName;
     @api recordId
     @api height;
     @api folderId;
+    @api scopes;
     @api buieURL;
     @api downscopedToken;
+
 
     error;
 
@@ -19,19 +22,24 @@ export default class ContentUploader extends LightningElement {
 
     connectedCallback() {    
         window.addEventListener('message' , this.handleVFResponse.bind(this));
+        console.log('Found recordId: ', this.recordId);
 
         // Call apex method to get downscoped token
         downscopeToken({
             resourceType: 'folders',
             recordId: this.recordId,
-            scopes: 'base_upload',
+            folderId: this.folderId,
+            scopes: this.scopes,
         })
         .then(responseMap => {
+            console.log('Found response map: ', responseMap);
             this.folderId = responseMap.folderId;
-            this.downscopedToken = responseMap.downscopedToken;      
+            this.downscopedToken = responseMap.accessToken;      
+            const ltnOrigin = responseMap.ltnOrigin;
+            console.log('Found ltn origin: ', ltnOrigin);
 
             // Set the buieURL used in the iframe src param
-            this.buieURL = `/apex/ContentUploader?recId=${this.recordId}&folderId=${this.folderId}&downscopedToken=${this.downscopedToken}&heigh=${this.height}`;
+            this.buieURL = `${ltnOrigin}/apex/ContentUploader?recId=${this.recordId}&folderId=${this.folderId}&downscopedToken=${this.downscopedToken}&height=${this.height}`;
         })
         .catch(error => {
             this.error = error;

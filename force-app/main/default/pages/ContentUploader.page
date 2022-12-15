@@ -18,9 +18,9 @@
                 
                 uploader.show(folderId, downscopedToken, {
                     container: uploaderContainer,
-                    logoUrl: logoUrl,
-                    requestInterceptor: filterFileTypes,
-                    responseInterceptor: handleError
+                    logoUrl: logoUrl
+                    // requestInterceptor: filterFileTypes,
+                    // responseInterceptor: handleError
                 });
                        
         }
@@ -35,7 +35,7 @@
                 const fileExtension = fileName.split(".").pop();
                 console.log('With extension: ', fileExtension);
 
-                const allowedExtensions =  ['pdf','docx'];
+                const allowedExtensions =  ['pdf','docx', 'xlsx'];
 
                 console.log('Attempting to block file types: ', config)
                 if(!allowedExtensions.includes(fileExtension)) {
@@ -51,15 +51,15 @@
         function handleError(config) {
             console.log('Found response config: ', config);
 
-            const lexOrigin = '{!lexOrigin}';
-            console.log('Found lwc origin: ', lexOrigin);
+            const ltnOrigin = '{!ltnOrigin}';
+            console.log('Found ltn origin: ', ltnOrigin);
             const message = {
                 title: 'Failed to Upload',
                 errorMessage: 'File type not allowed!',
                 variant: 'error'
             };
             
-            window.parent.postMessage(message, lexOrigin)
+            window.parent.postMessage(message, ltnOrigin)
         }
     </script>
 </apex:page>

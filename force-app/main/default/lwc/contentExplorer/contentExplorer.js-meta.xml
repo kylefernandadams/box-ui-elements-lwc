@@ -8,17 +8,61 @@
         <target>lightning__RecordPage</target>
         <target>lightning__HomePage</target>
         <target>lightningCommunity__Page</target>
+        <target>lightning__FlowScreen</target>
         <target>lightningCommunity__Default</target>
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
-            <objects>
-                <object>Account</object>
-                <object>Opportunity</object>
-                <object>Contact</object>
-                <object>Case</object>
-            </objects>
             <property name="height" label="Height" type="String" />
+            <property name="recordId" label="Record ID" type="String" default="{!recordId}" />
+            <property name="folderId" label="Folder ID" type="String" default="{!folderId}" />
+            <property
+                name="scopes"
+                type="String"
+                label="Box Scopes"
+                description="Pass in the scopes to be used with the Box UI Element"
+            />
+        </targetConfig>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="height" label="Height" type="String" />
+            <property
+                name="recordId"
+                type="String"
+                label="Record Id"
+                description="Pass the page's record id to the component variable"/>
+            <property
+                name="folderId"
+                type="String"
+                label="Box Folder Id"
+                description="Pass in the folderId stored in the FRUP record"
+            />
+            <property
+                name="scopes"
+                type="String"
+                label="Box Scopes"
+                description="Pass in the scopes to be used with the Box UI Element"
+            />
+        </targetConfig>
+        <targetConfig targets="lightning__FlowScreen">
+            <property name="height" label="Height" type="String" />
+            <property
+                name="recordId"
+                type="String"
+                label="Record Id"
+                description="Pass the page's record id to the component variable" 
+            />
+            <property
+                name="folderId"
+                type="String"
+                label="Box Folder Id"
+                description="Pass in the folderId stored in the FRUP record"
+            />
+            <property
+                name="scopes"
+                type="String"
+                label="Box Scopes"
+                description="Pass in the scopes to be used with the Box UI Element"
+            />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

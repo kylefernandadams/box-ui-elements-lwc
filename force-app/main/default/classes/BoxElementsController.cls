@@ -1,14 +1,11 @@
 public with sharing class BoxElementsController {
-    public static final String BOX_CLIENT_ID = 'UPDATE_ME';
-    public static final String BOX_CLIENT_SECRET = 'UPDATE_ME';
-
     public static final String HEADER_CONTENT_TYPE = 'Content-Type';
     public static final String HEADER_APPLICATION_ENCODED = 'application/x-www-form-urlencoded';
     public static final String HEADER_APPLICATION_JSON = 'application/json';
     public static final String TOKEN_URL_STRING = 'https://api.box.com/oauth2/token';
     public static final String GET_CURRENT_USER_URL = 'https://api.box.com/2.0/users/me';
 
-    public string lexOrigin {get{ return URL.getOrgDomainUrl().toExternalForm().split('\\.')[0] + '.lightning.force.com';} set;}
+    public string ltnOrigin {get{ return URL.getOrgDomainUrl().toExternalForm().split('\\.')[0] + '.lightning.force.com';} set;}
 
     @AuraEnabled(cacheable = true)
     public static string getVFOrigin() {
@@ -33,57 +30,79 @@ public with sharing class BoxElementsController {
 
 
     @AuraEnabled()
-    public static Map<String, String> downscopeToken(String resourceType, String recordId, String scopes) {
+    public static Map<String, String> downscopeToken(String resourceType, String recordId, String folderId, String scopes) {
         box.Toolkit boxToolkit = new box.Toolkit();
 
-        // Get userId and folderId from FRUP record
-        box__FRUP__c frup = [SELECT box__Folder_ID__c, box__Record_ID__c, box__Box_user__c FROM box__FRUP__c WHERE box__Record_ID__c = :recordId AND box__Box_user__c != NULL LIMIT 1];
-        String userId = frup.box__Box_user__c;
-        String folderId = frup.box__Folder_ID__c;
+        System.debug('Found recordId: ' + recordId);
+        System.debug('Found folderId: ' + folderId);
+        System.debug('Found resource type: ' + resourceType);
+        System.debug('Found scopes: ' + scopes);
+        String ltnOrigin = URL.getOrgDomainUrl().toExternalForm().split('\\.')[0] + '.lightning.force.com';
+        System.debug('Ltn origin: ' + ltnOrigin);
 
-        System.debug('Found user id: ' + userId);
+        BoxClientCredentialsGrant__mdt boxClientCredentialsGrant = [SELECT Id, BoxClientId__c, BoxClientSecret__c, BoxSubjectType__c, BoxSubjectId__c FROM BoxClientCredentialsGrant__mdt LIMIT 1];
 
-        // Create Client Credentials Grant map
-        Map<String, String> clientCredentialsGrantMap = new Map<String, String>();
-        clientCredentialsGrantMap.put('client_id', BOX_CLIENT_ID);
-        clientCredentialsGrantMap.put('client_secret', BOX_CLIENT_SECRET);
-        clientCredentialsGrantMap.put('grant_type', 'client_credentials');
-        clientCredentialsGrantMap.put('box_subject_type', 'user');
-        clientCredentialsGrantMap.put('box_subject_id', userId);
-
-        // Get parent access token from Client Credentials Grant Auth
-        String encodedUrl = urlEncode(clientCredentialsGrantMap);          
-        String parentAccessToken = getAccessToken(encodedUrl);
-
-        // Create map for downscoped token request
-        String resource = 'https://api.box.com/2.0/' + resourceType;
-        Map<String, String> downscopeTokenMap = new Map<String, String>();
-        if(resourceType.endsWithIgnoreCase('folders')) {
-            System.debug('Found folder with id: ' + folderId);
-            resource += '/' + folderId;
-            downscopeTokenMap.put('resource', resource);
-        } 
-
-        downscopeTokenMap.put('subject_token', parentAccessToken);
-        downscopeTokenMap.put('subject_token_type', 'urn:ietf:params:oauth:token-type:access_token');
-        downscopeTokenMap.put('scope', scopes);
-        downscopeTokenMap.put('grant_type', 'urn:ietf:params:oauth:grant-type:token-exchange');
-
-        // Get downsceoped token
-        String downscopedEncodedUrl = urlEncode(downscopeTokenMap);
-        String downscopedToken = getAccessToken(downscopedEncodedUrl);
-
-        // Set folderId and downscoped token to pass back to LWC javascript controller
         Map<String, String> buieMap = new Map<String, String>();
-        buieMap.put('folderId', folderId);
-        buieMap.put('downscopedToken', downscopedToken);
+        if(boxClientCredentialsGrant != null) {
+
+            // Create Client Credentials Grant map
+            Map<String, String> clientCredentialsGrantMap = new Map<String, String>();
+            clientCredentialsGrantMap.put('client_id', boxClientCredentialsGrant.BoxClientId__c);
+            clientCredentialsGrantMap.put('client_secret', boxClientCredentialsGrant.BoxClientSecret__c);
+            clientCredentialsGrantMap.put('grant_type', 'client_credentials');
+            clientCredentialsGrantMap.put('box_subject_type', boxClientCredentialsGrant.BoxSubjectType__c);
+            clientCredentialsGrantMap.put('box_subject_id', boxClientCredentialsGrant.BoxSubjectId__c);
+
+            // Get parent access token from Client Credentials Grant Auth
+            String encodedUrl = urlEncode(clientCredentialsGrantMap);          
+            AuthenticationResponse parentAccessTokenRes = getAccessToken(encodedUrl);
+            String accessToken;
+            if(!String.isEmpty(scopes)) {
+                // Get userId and folderId from FRUP record
+                box__FRUP__c frup;
+                if(String.isEmpty(folderId)) {
+                    frup = [SELECT box__Folder_ID__c, box__Record_ID__c, box__Box_user__c FROM box__FRUP__c WHERE box__Record_ID__c = :recordId LIMIT 1];
+                    folderId = frup.box__Folder_ID__c;
+                }
+
+                // Create map for downscoped token request
+                String resource = 'https://api.box.com/2.0/' + resourceType;
+                Map<String, String> downscopeTokenMap = new Map<String, String>();
+                if(resourceType.endsWithIgnoreCase('folders')) {
+                    System.debug('Found folder with id: ' + folderId);
+                    resource += '/' + folderId;
+                    downscopeTokenMap.put('resource', resource);
+                } 
+
+                downscopeTokenMap.put('subject_token', parentAccessTokenRes.access_token);
+                downscopeTokenMap.put('subject_token_type', 'urn:ietf:params:oauth:token-type:access_token');
+                downscopeTokenMap.put('scope', scopes);
+                downscopeTokenMap.put('grant_type', 'urn:ietf:params:oauth:grant-type:token-exchange');
+
+                // Get downsceoped token
+                String downscopedEncodedUrl = urlEncode(downscopeTokenMap);
+                AuthenticationResponse downscopedTokenRes = getAccessToken(downscopedEncodedUrl);
+                accessToken = downscopedTokenRes.access_token;
+
+            } else {
+                accessToken = parentAccessTokenRes.access_token;
+            }
+            // Set folderId and downscoped token to pass back to LWC javascript controller
+            buieMap.put('folderId', folderId);
+            buieMap.put('accessToken', accessToken);
+            buieMap.put('ltnOrigin', ltnOrigin);
+
+        }
+        else {
+            System.debug('Box Client Credentials Grant metadata not found!');
+        }
 
         return buieMap;
     }
 
 
 
-    private static String getAccessToken(String encodedUrl) {
+    private static AuthenticationResponse getAccessToken(String encodedUrl) {
         HttpRequest httpRequest = new HttpRequest();
         httpRequest.setMethod('POST');
         httpRequest.setEndpoint(TOKEN_URL_STRING);
@@ -96,7 +115,7 @@ public with sharing class BoxElementsController {
         String body = response.getBody();
         AuthenticationResponse authResponse = AuthenticationResponse.parse(body);
         
-        return authResponse.access_token;
+        return authResponse;
     }
 
     private static String urlEncode(Map<String, String> urlParameterMap) {
