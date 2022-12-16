@@ -13,7 +13,7 @@ The Box UI Elements LWC project provides sample code to illustrate wrapping Box 
 6. Open the source from this repo in VS Code.
 7. Create a [JWT Box App](https://developer.box.com/guides/authentication/jwt/) with Client Credentials Auth
 8. In Salesforce Setup, go to Custom Metadata Types and create a new record for Box Client Credentials Grant.
-   > Note: This will you the client id and client secret from the previous step.
+   > Note: This will use the client id and client secret from the previous step.
 9.  In VS Code, use the cmd+shift+p shortcut and select SFDX: Authorize Org
 10. Confirm you've successfully authorized your org by listing orgs and their associated status:
 ```
