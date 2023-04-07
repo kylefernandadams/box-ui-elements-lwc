@@ -13,23 +13,25 @@
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
-            <property name="height" label="Height" type="String" />
-            <property name="recordId" label="Record ID" type="String" default="{!recordId}" />
-            <property name="folderId" label="Folder ID" type="String" default="{!folderId}" />
+            <property name="height" label="Height" type="String" default="625px"/>
+            <property name="recordId" label="Record ID" type="String" default="{recordId}" />
+            <property name="folderId" label="Folder ID" type="String" />
             <property
                 name="scopes"
                 type="String"
                 label="Box Scopes"
                 description="Pass in the scopes to be used with the Box UI Element"
+                default="base_explorer item_preview item_download item_rename item_delete item_share item_upload root_readwrite annotation_view_all annotation_edit"
             />
         </targetConfig>
         <targetConfig targets="lightningCommunity__Default">
-            <property name="height" label="Height" type="String" />
+            <property name="height" label="Height" type="String" default="625px"/>
             <property
                 name="recordId"
                 type="String"
                 label="Record Id"
-                description="Pass the page's record id to the component variable"/>
+                description="Pass the page's record id to the component variable"
+                default="{!recordId}" />
             <property
                 name="folderId"
                 type="String"
@@ -41,15 +43,17 @@
                 type="String"
                 label="Box Scopes"
                 description="Pass in the scopes to be used with the Box UI Element"
+                default="base_explorer item_preview item_download item_rename item_delete item_share item_upload root_readwrite annotation_view_all annotation_edit"
             />
         </targetConfig>
         <targetConfig targets="lightning__FlowScreen">
-            <property name="height" label="Height" type="String" />
+            <property name="height" label="Height" type="String" default="625px"/>
             <property
                 name="recordId"
                 type="String"
                 label="Record Id"
                 description="Pass the page's record id to the component variable" 
+                default="{!recordId}" 
             />
             <property
                 name="folderId"
@@ -62,6 +66,7 @@
                 type="String"
                 label="Box Scopes"
                 description="Pass in the scopes to be used with the Box UI Element"
+                default="base_explorer item_preview item_download item_rename item_delete item_share item_upload root_readwrite annotation_view_all annotation_edit"
             />
         </targetConfig>
     </targetConfigs>

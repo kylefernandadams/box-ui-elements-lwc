@@ -1,3 +1,4 @@
+.sfdx*
 **/.sfdx/tools/**
 **/.sfdx/typings/**
 **/.sfdx/indexes/**
@@ -8,3 +9,6 @@
 *.json
 .sfdx/typings/lwc/apex/BoxElementsController.d.ts
 .sfdx/typings/lwc/preview.resource.d.ts
+.localdevserver
+
+.sfdx/sfdx-config.json

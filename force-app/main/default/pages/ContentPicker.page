@@ -1,0 +1,60 @@
+<apex:page lightningStylesheets="true" controller="BoxElementsController">
+    <apex:slds />
+    <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/16.0.0/en-US/picker.js')}" />
+    <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/16.0.0/en-US/picker.css')}" />
+    
+    <!-- This does NOT work-->
+    <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/16.0.0/en-US/preview.js')}" />
+    <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/16.0.0/en-US/preview.css')}" />
+
+    <!-- This works --> 
+    <apex:includeScript value="{!URLFOR($Resource.annotations, '/annotations.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.annotations, '/annotations.css')}" />
+    <body style="height: 615px" onload="init()" />       
+
+    
+    <script type="text/javascript">
+        function init() {
+            const folderId = '{!$CurrentPage.parameters.folderId}';
+            const downscopedToken = '{!$CurrentPage.parameters.downscopedToken}';
+            const chooseButtonLabel = '{!$CurrentPage.parameters.chooseButtonLabel}';
+            
+            // Instantiate Content Picker and Preview UI Elements
+            const buieContainer = document.querySelector('#buie-container')
+            const picker = new Box.ContentPicker();
+            const logoUrl = "{!URLFOR($Resource.logos, '/box.png')}";
+            const boxAnnotations = new BoxAnnotations();
+            picker.show(folderId, downscopedToken, {
+                container: buieContainer,
+                logoUrl: logoUrl,
+                autoFocus: true,
+                canUpload: true,
+                canCreateNewFolder: true,
+                clearSelectedItemsOnNavigation: true,
+                onChoose: handleChooseItems
+            });
+        }
+
+
+        function handleChooseItems(items) {
+            console.log('VF - listener... ', items);
+            // If no files were selected then just return
+            if (items.length === 0) {
+                return;
+            }
+
+           
+            let itemArray = [];
+            items.forEach(item => {
+                console.log('Found item with name: ', item);
+                itemArray.push({ id: item.id, name: item.name});
+            })
+
+            // console.log('CF - Found box items: ' + boxItems);
+            const ltnOrigin = '{!ltnOrigin}';
+
+            window.parent.postMessage(itemArray, ltnOrigin);
+        
+        }
+    </script>
+</apex:page>

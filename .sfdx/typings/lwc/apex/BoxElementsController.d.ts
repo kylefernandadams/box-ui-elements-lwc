@@ -2,5 +2,5 @@ declare module "@salesforce/apex/BoxElementsController.getVFOrigin" {
   export default function getVFOrigin(): Promise<any>;
 }
 declare module "@salesforce/apex/BoxElementsController.downscopeToken" {
-  export default function downscopeToken(param: {resourceType: any, recordId: any, scopes: any}): Promise<any>;
+  export default function downscopeToken(param: {resourceType: any, recordId: any, folderId: any, scopes: any}): Promise<any>;
 }

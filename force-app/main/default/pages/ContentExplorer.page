@@ -1,18 +1,26 @@
 <apex:page lightningStylesheets="true" controller="BoxElementsController">
     <apex:slds />
-    <apex:includeScript value="{!URLFOR($Resource.explorer, '/16.0.0/en-US/explorer.js')}" />
-    <apex:stylesheet value="{!URLFOR($Resource.explorer, '/16.0.0/en-US/explorer.css')}" />
+    <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/16.0.0/en-US/explorer.js')}" />
+    <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/16.0.0/en-US/explorer.css')}" />
+    
+    <!-- Updated to point to right CDN -->
+    <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/preview/2.81.0/en-US/preview.js')}" />
+    <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/preview/2.81.0/en-US/preview.css')}" />
+
+    <!-- This works --> 
+    <apex:includeScript value="{!URLFOR($Resource.annotations, '/annotations.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.annotations, '/annotations.css')}" />
     <body style="height: 615px" onload="init()" />       
     
     <script type="text/javascript">
         function init() {
             const folderId = '{!$CurrentPage.parameters.folderId}';
             const downscopedToken = '{!$CurrentPage.parameters.downscopedToken}';
-
             // Instantiate Content Explorer UI Element
             const explorerContainer = document.querySelector('#explorer-container')
             const explorer = new Box.ContentExplorer();
             const logoUrl = "{!URLFOR($Resource.logos, '/box.png')}";
+            const boxAnnotations = new BoxAnnotations();
             explorer.show(folderId, downscopedToken, {
                 container: explorerContainer,
                 logoUrl: logoUrl,
@@ -26,8 +34,13 @@
                 canShare: true,
                 canSetShareAccess: true,
                 contentPreviewProps: {
+                    boxAnnotations: boxAnnotations,
                     showAnnotations: true,
                     showDownload: true,
+                    enableAnnotationsDiscoverability: true,
+                    enableAnnotationsImageDiscoverability: true,
+                    showAnnotationsControls: true,
+                    showAnnotationsDrawingCreate: true,
                     contentSidebarProps: {
                         detailsSidebarProps: {
                             hasAccessStats: true,
@@ -41,6 +54,13 @@
                         hasMetadata: true,
                         hasSkills: true,
                         hasVersions: true,
+                        features: {
+                            activityFeed: {
+                                annotations: {
+                                    enabled: true
+                                }
+                            }
+                        }
                     }
                 }
             });

@@ -1,0 +1,13 @@
+.buie-container {
+    padding-top: 0px;
+    width: calc(100% + 40px);
+    padding: 0 0 0 20px;
+    margin: 0 0 0 -20px;
+}
+
+.elements {
+    padding-top: 0px;
+    width: calc(100% + 40px);
+    padding: 0 0 0 20px;
+    margin: 0 0 0 -20px;
+}
