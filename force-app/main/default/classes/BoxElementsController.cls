@@ -31,7 +31,6 @@ public with sharing class BoxElementsController {
 
     @AuraEnabled()
     public static Map<String, String> downscopeToken(String resourceType, String recordId, String folderId, String scopes) {
-        box.Toolkit boxToolkit = new box.Toolkit();
 
         System.debug('Found recordId: ' + recordId);
         System.debug('Found folderId: ' + folderId);
