@@ -6,7 +6,7 @@ The Box UI Elements LWC project provides sample code to illustrate wrapping Box 
 1. Clone this github repo.
 2. Setup your Salesforce DX environment: https://trailhead.salesforce.com/en/content/learn/projects/quick-start-salesforce-dx/set-up-your-salesforce-dx-environment
 3. Setup VS Code: https://trailhead.salesforce.com/content/learn/projects/quick-start-lightning-web-components/set-up-visual-studio-code
-4. Install and Configure the Box for Salesforce Managed Package: https://community.box.com/t5/How-to-Guides-for-Integrations/Installing-and-Configuring-Box-For-Salesforce/ta-p/180
+4. (Optional) Install and Configure the Box for Salesforce Managed Package: https://community.box.com/t5/How-to-Guides-for-Integrations/Installing-and-Configuring-Box-For-Salesforce/ta-p/180
     > Note: Dont forget to add the Box VisualForce components to each of the record type layouts.
 
 5. Manual create a folder from a given sample record
