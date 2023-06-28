@@ -1,7 +1,7 @@
 <apex:page lightningStylesheets="true" controller="BoxElementsController">
     <apex:slds />
-    <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/16.0.0/en-US/uploader.js')}" />
-    <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/16.0.0/en-US/uploader.css')}" />
+    <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/uploader.js')}" />
+    <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/uploader.css')}" />
     
     <body style="height: 515px" onload="init()" />       
     
