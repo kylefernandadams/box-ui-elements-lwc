@@ -1,13 +1,11 @@
 <apex:page lightningStylesheets="true" controller="BoxElementsController">
     <apex:slds />
-    <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/16.0.0/en-US/explorer.js')}" />
-    <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/16.0.0/en-US/explorer.css')}" />
+    <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/explorer.js')}" />
+    <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/explorer.css')}" />
     
-    <!-- Updated to point to right CDN -->
-    <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/preview/2.81.0/en-US/preview.js')}" />
-    <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/preview/2.81.0/en-US/preview.css')}" />
+    <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/elements/preview/17.1.0/en-US/preview.js')}" />
+    <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/elements/preview/17.1.0/en-US/preview.css')}" />
 
-    <!-- This works --> 
     <apex:includeScript value="{!URLFOR($Resource.annotations, '/annotations.js')}" />
     <apex:stylesheet value="{!URLFOR($Resource.annotations, '/annotations.css')}" />
     <body style="height: 615px" onload="init()" />       
