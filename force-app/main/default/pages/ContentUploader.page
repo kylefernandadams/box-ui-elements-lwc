@@ -1,10 +1,5 @@
 <apex:page lightningStylesheets="true" controller="BoxElementsController">
     <apex:slds />
-<<<<<<< HEAD
-    <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/uploader.js')}" />
-    <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/uploader.css')}" />
-=======
->>>>>>> 952f164 (Refactor auth, update BUIE version, add MD Query)
     
     <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/uploader.js')}" />
     <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/uploader.css')}" />
