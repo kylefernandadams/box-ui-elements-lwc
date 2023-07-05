@@ -3,11 +3,9 @@
     <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/explorer.js')}" />
     <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/explorer.css')}" />
     
-    <!-- This does NOT work-->
     <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/preview.js')}" />
     <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/preview.css')}" />
 
-    <!-- This works --> 
     <apex:includeScript value="{!URLFOR($Resource.annotations, '/annotations.js')}" />
     <apex:stylesheet value="{!URLFOR($Resource.annotations, '/annotations.css')}" />
     <body style="height: 415px" onload="init()" />       
