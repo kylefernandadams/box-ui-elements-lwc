@@ -1,0 +1,18 @@
+<template>
+    <div class="boxElementsCard">
+        <lightning-card>
+            <h3 slot="title" class="boxElementsHeader">
+                <img src={boxLogoPNG} class="boxLogo"/>
+                {elementTitle}
+            </h3>
+            <iframe src={buieURL}
+                height={height} 
+                width='100%' 
+                frameborder="0"
+                allowfullscreen
+                webkitallowfullscreen
+                msallowfullscreen>
+            </iframe>
+        </lightning-card>
+    </div>
+</template>

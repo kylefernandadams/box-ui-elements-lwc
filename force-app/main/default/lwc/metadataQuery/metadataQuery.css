@@ -1,0 +1,27 @@
+.boxElementsHeader {
+    padding-left: 5px;
+    padding-top: 5px;
+}
+
+.boxLogo{
+    width: 32px;
+    height: 32px;
+    margin: 10px;
+}
+.boxElementsCard {
+    border: 1px solid #dddbda;
+    border-radius: .25rem;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.1);
+    webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,.1);
+    background-clip: padding-box;
+}
+
+.slds-card__body {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.slds-card__header {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}

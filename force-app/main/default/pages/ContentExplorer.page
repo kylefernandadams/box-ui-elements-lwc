@@ -3,12 +3,17 @@
     <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/explorer.js')}" />
     <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/explorer.css')}" />
     
+<<<<<<< HEAD
     <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/elements/preview/17.1.0/en-US/preview.js')}" />
     <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/elements/preview/17.1.0/en-US/preview.css')}" />
+=======
+    <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/preview.js')}" />
+    <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/preview.css')}" />
+>>>>>>> 952f164 (Refactor auth, update BUIE version, add MD Query)
 
     <apex:includeScript value="{!URLFOR($Resource.annotations, '/annotations.js')}" />
     <apex:stylesheet value="{!URLFOR($Resource.annotations, '/annotations.css')}" />
-    <body style="height: 615px" onload="init()" />       
+    <body style="height: 515px" onload="init()" />       
     
     <script type="text/javascript">
         function init() {

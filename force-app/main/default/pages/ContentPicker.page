@@ -8,7 +8,7 @@
 
     <apex:includeScript value="{!URLFOR($Resource.annotations, '/annotations.js')}" />
     <apex:stylesheet value="{!URLFOR($Resource.annotations, '/annotations.css')}" />
-    <body style="height: 615px" onload="init()" />       
+    <body style="height: 515px" onload="init()" />       
 
     
     <script type="text/javascript">

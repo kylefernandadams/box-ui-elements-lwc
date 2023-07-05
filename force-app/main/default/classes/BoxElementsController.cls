@@ -1,9 +1,12 @@
 public with sharing class BoxElementsController {
-    public static final String HEADER_CONTENT_TYPE = 'Content-Type';
-    public static final String HEADER_APPLICATION_ENCODED = 'application/x-www-form-urlencoded';
-    public static final String HEADER_APPLICATION_JSON = 'application/json';
+    public static final String APPLICATION_ENCODED_HEADER = 'application/x-www-form-urlencoded';
+    public static final String AUTHORIZATION_HEADER = 'Authorization';
+    public static final String CONTENT_TYPE_HEADER = 'Content-Type';
+    public static final String POST_METHOD = 'POST';
+    public static final String BASE_FOLDER_URL_STRING = 'https://api.box.com/2.0/folders/';
     public static final String TOKEN_URL_STRING = 'https://api.box.com/oauth2/token';
-    public static final String GET_CURRENT_USER_URL = 'https://api.box.com/2.0/users/me';
+
+    
 
     public string ltnOrigin {get{ return URL.getOrgDomainUrl().toExternalForm().split('\\.')[0] + '.lightning.force.com';} set;}
 
@@ -30,98 +33,77 @@ public with sharing class BoxElementsController {
 
 
     @AuraEnabled()
-    public static Map<String, String> downscopeToken(String resourceType, String recordId, String folderId, String scopes) {
+    public static Map<String, String> downscopeToken(String resourceType, String recordId, String boxItemId, String scopes) {
 
         System.debug('Found recordId: ' + recordId);
-        System.debug('Found folderId: ' + folderId);
+        System.debug('Found boxItemId: ' + boxItemId);
         System.debug('Found resource type: ' + resourceType);
         System.debug('Found scopes: ' + scopes);
         String ltnOrigin = URL.getOrgDomainUrl().toExternalForm().split('\\.')[0] + '.lightning.force.com';
+        // String ltnOrigin = URL.getOrgDomainUrl().toExternalForm().split('\\.')[0] + '.my.site.com';
+
         System.debug('Ltn origin: ' + ltnOrigin);
 
-        BoxClientCredentialsGrant__mdt boxClientCredentialsGrant = [SELECT Id, BoxClientId__c, BoxClientSecret__c, BoxSubjectType__c, BoxSubjectId__c FROM BoxClientCredentialsGrant__mdt LIMIT 1];
 
-        Map<String, String> buieMap = new Map<String, String>();
-        if(boxClientCredentialsGrant != null) {
+        // Get parent access token from Client Credentials Grant Auth
+        BoxClient boxClient = new BoxClient();
+        boxClient.authenticate(null);
 
-            // Create Client Credentials Grant map
-            Map<String, String> clientCredentialsGrantMap = new Map<String, String>();
-            clientCredentialsGrantMap.put('client_id', boxClientCredentialsGrant.BoxClientId__c);
-            clientCredentialsGrantMap.put('client_secret', boxClientCredentialsGrant.BoxClientSecret__c);
-            clientCredentialsGrantMap.put('grant_type', 'client_credentials');
-            clientCredentialsGrantMap.put('box_subject_type', boxClientCredentialsGrant.BoxSubjectType__c);
-            clientCredentialsGrantMap.put('box_subject_id', boxClientCredentialsGrant.BoxSubjectId__c);
+        String accessToken;
+        if(!String.isEmpty(scopes) && (!resourceType.equalsIgnoreCase('metadata'))) {
 
-            // Get parent access token from Client Credentials Grant Auth
-            String encodedUrl = urlEncode(clientCredentialsGrantMap);          
-            AuthenticationResponse parentAccessTokenRes = getAccessToken(encodedUrl);
-            String accessToken;
-            if(!String.isEmpty(scopes)) {
+            if(String.isEmpty(boxItemId)) {
                 // Get userId and folderId from FRUP record
                 box__FRUP__c frup;
-                if(String.isEmpty(folderId)) {
+                if(String.isEmpty(boxItemId)) {
                     frup = [SELECT box__Folder_ID__c, box__Record_ID__c, box__Box_user__c FROM box__FRUP__c WHERE box__Record_ID__c = :recordId LIMIT 1];
-                    folderId = frup.box__Folder_ID__c;
+                    boxItemId = frup.box__Folder_ID__c;
                 }
-
-                // Create map for downscoped token request
-                String resource = 'https://api.box.com/2.0/' + resourceType;
-                Map<String, String> downscopeTokenMap = new Map<String, String>();
-                if(resourceType.endsWithIgnoreCase('folders')) {
-                    System.debug('Found folder with id: ' + folderId);
-                    resource += '/' + folderId;
-                    downscopeTokenMap.put('resource', resource);
-                } 
-
-                downscopeTokenMap.put('subject_token', parentAccessTokenRes.access_token);
-                downscopeTokenMap.put('subject_token_type', 'urn:ietf:params:oauth:token-type:access_token');
-                downscopeTokenMap.put('scope', scopes);
-                downscopeTokenMap.put('grant_type', 'urn:ietf:params:oauth:grant-type:token-exchange');
-
-                // Get downsceoped token
-                String downscopedEncodedUrl = urlEncode(downscopeTokenMap);
-                AuthenticationResponse downscopedTokenRes = getAccessToken(downscopedEncodedUrl);
-                accessToken = downscopedTokenRes.access_token;
-
-            } else {
-                accessToken = parentAccessTokenRes.access_token;
             }
-            // Set folderId and downscoped token to pass back to LWC javascript controller
-            buieMap.put('folderId', folderId);
-            buieMap.put('accessToken', accessToken);
-            buieMap.put('ltnOrigin', ltnOrigin);
+            
 
+            // Create map for downscoped token request
+            String resource = 'https://api.box.com/2.0/' + resourceType;
+            Map<String, String> downscopeTokenMap = new Map<String, String>();
+            if(resourceType.equalsIgnoreCase('folders') || resourceType.equalsIgnoreCase('files')) {
+                System.debug('Found folder with id: ' + boxItemId);
+                resource += '/' + boxItemId;
+            } 
+
+            String urlParameters = String.format(
+            'grant_type={0}&subject_token={1}&subject_token_type={2}&scope={3}&resource={4}',
+            new List<String>{
+                'urn:ietf:params:oauth:grant-type:token-exchange',
+                boxClient.getAccessToken(),
+                'urn:ietf:params:oauth:token-type:access_token',
+                scopes,
+                resource
+            });
+
+            Map<String, String> headers = new Map<String, String>();
+            headers.put(CONTENT_TYPE_HEADER, APPLICATION_ENCODED_HEADER);
+
+            // Get downsceoped token
+            HttpResponse response = boxClient.sendRequest(POST_METHOD, TOKEN_URL_STRING, headers, urlParameters);
+            System.debug('Found response: ' + response.getBody());
+            System.debug('Found status: ' + response.getStatus());
+
+            if(response.getStatus() == 'OK') {
+                String body = response.getBody();
+                AuthenticationResponse authResponse = AuthenticationResponse.parse(body);
+                accessToken = authResponse.access_token;
+            }
+
+        } else {
+            boxItemId = '0';
+            accessToken = boxClient.getAccessToken();
         }
-        else {
-            System.debug('Box Client Credentials Grant metadata not found!');
-        }
+        // Set folderId and downscoped token to pass back to LWC javascript controller
+        Map<String, String> buieMap = new Map<String, String>();
+        buieMap.put('folderId', boxItemId);
+        buieMap.put('accessToken', accessToken);
+        buieMap.put('ltnOrigin', ltnOrigin);
 
         return buieMap;
     }
-
-
-
-    private static AuthenticationResponse getAccessToken(String encodedUrl) {
-        HttpRequest httpRequest = new HttpRequest();
-        httpRequest.setMethod('POST');
-        httpRequest.setEndpoint(TOKEN_URL_STRING);
-        httpRequest.setHeader(HEADER_CONTENT_TYPE, HEADER_APPLICATION_ENCODED);
-        httpRequest.setBody(encodedUrl);
-
-        Http http = new Http();
-        HttpResponse response = http.send(httpRequest);
-        System.debug('Found response: ' + response);
-        String body = response.getBody();
-        AuthenticationResponse authResponse = AuthenticationResponse.parse(body);
-        
-        return authResponse;
-    }
-
-    private static String urlEncode(Map<String, String> urlParameterMap) {
-      String result = '';
-      for(String key : urlParameterMap.keySet()) {
-          result += EncodingUtil.urlEncode(key, 'UTF-8') + '=' + EncodingUtil.urlEncode(urlParameterMap.get(key), 'UTF-8') + '&';
-      }
-      return result.removeEnd('&');    
-  }
 }

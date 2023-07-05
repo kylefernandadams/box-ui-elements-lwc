@@ -11,7 +11,8 @@
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
-            <property name="height" label="Height" type="String" default="525px"/>
+            <property name="elementTitle" label="Title" type="String" default="Box Content Uploader"/>
+            <property name="height" label="Height" type="String" default="425px"/>
             <property name="recordId" label="Record ID" type="String" default="{recordId}" />
             <property
                     name="scopes"
@@ -22,7 +23,8 @@
                 />
         </targetConfig>
             <targetConfig targets="lightningCommunity__Default">
-                <property name="height" label="Height" type="String" default="525px"/>
+                <property name="elementTitle" label="Title" type="String" default="Box Content Uploader"/>
+                <property name="height" label="Height" type="String" default="425px"/>
                 <property
                     name="recordId"
                     type="String"
@@ -39,7 +41,8 @@
                 />
             </targetConfig>
             <targetConfig targets="lightning__FlowScreen">
-                <property name="height" label="Height" type="String" default="525px"/>
+                <property name="elementTitle" label="Title" type="String" default="Box Content Uploader"/>
+                <property name="height" label="Height" type="String" default="425px"/>
                 <property
                     name="recordId"
                     type="String"

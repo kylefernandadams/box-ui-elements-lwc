@@ -10,50 +10,8 @@ public with sharing class BoxContentPickerController {
     public static Map<String, Object> copyFilesToFolder(String recordId, String sourceFileId, String targetFolderId) {
         Map<String, Object> copyResponseMap = new Map<String, Object>();
 
-        BoxClientCredentialsGrant__mdt boxClientCredentialsGrant = [SELECT Id, BoxClientId__c, BoxClientSecret__c, BoxSubjectType__c, BoxSubjectId__c FROM BoxClientCredentialsGrant__mdt LIMIT 1];
-
-
-        // Create Client Credentials Grant map
-        Map<String, String> clientCredentialsGrantMap = new Map<String, String>();
-        clientCredentialsGrantMap.put('client_id', boxClientCredentialsGrant.BoxClientId__c);
-        clientCredentialsGrantMap.put('client_secret', boxClientCredentialsGrant.BoxClientSecret__c);
-        clientCredentialsGrantMap.put('grant_type', 'client_credentials');
-        clientCredentialsGrantMap.put('box_subject_type', boxClientCredentialsGrant.BoxSubjectType__c);
-        clientCredentialsGrantMap.put('box_subject_id', boxClientCredentialsGrant.BoxSubjectId__c);
-
-        // Get parent access token from Client Credentials Grant Auth
-        AuthenticationResponse parentAccessTokenRes = BoxClientCredentialsHelper.getAccessToken(clientCredentialsGrantMap);
-
-        String boxSubjectType = String.valueOf(boxClientCredentialsGrant.BoxSubjectType__c);
-        String parentToken;
-        if(boxSubjectType.equalsIgnoreCase('user')) {
-            HttpRequest httpRequest = new HttpRequest();
-            httpRequest.setMethod('GET');
-            httpRequest.setEndpoint(USERS_URL_STRING);
-            httpRequest.setHeader(HEADER_CONTENT_TYPE, HEADER_APPLICATION_JSON);
-
-            Http http = new Http();
-            HttpResponse response = http.send(httpRequest);
-            System.debug('Found response: ' + response);
-            String body = response.getBody();
-            UserResponse userResponse = UserResponse.parse(body);
-            System.debug('Found user: ' + userResponse);
-
-            // Create Client Credentials Grant map
-            Map<String, String> userCCGrantMap = new Map<String, String>();
-            userCCGrantMap.put('client_id', boxClientCredentialsGrant.BoxClientId__c);
-            userCCGrantMap.put('client_secret', boxClientCredentialsGrant.BoxClientSecret__c);
-            userCCGrantMap.put('grant_type', 'client_credentials');
-            userCCGrantMap.put('box_subject_type', 'user');
-            userCCGrantMap.put('box_subject_id', userResponse.id);
-
-            // Get parent access token from Client Credentials Grant Auth
-            AuthenticationResponse userAccessTokenRes = BoxClientCredentialsHelper.getAccessToken(userCCGrantMap);
-            parentToken = userAccessTokenRes.access_token;
-        }
-        else {
-            parentToken = parentAccessTokenRes.access_token;
-        }
+        BoxClient boxClient = new BoxClient();
+        boxClient.authenticate(null);
 
         box__FRUP__c frup;
         if(String.isEmpty(targetFolderId)) {
@@ -69,10 +27,10 @@ public with sharing class BoxContentPickerController {
         new List<String> {sourceFileId});
         copyRequest.setEndpoint(copyFileEndpoint);
         copyRequest.setHeader(HEADER_CONTENT_TYPE, HEADER_APPLICATION_JSON);
-        copyRequest.setHeader(HEADER_AUTHORIZATION, 'Bearer ' + parentToken);
+        copyRequest.setHeader(HEADER_AUTHORIZATION, 'Bearer ' + boxClient.getAccessToken());
 
-        ItemCopyRequest copyBody = new ItemCopyRequest();
-        ItemCopyRequest.Parent parentFolder = new ItemCopyRequest.Parent();
+        FileCopyRequest copyBody = new FileCopyRequest();
+        FileCopyRequest.Parent parentFolder = new FileCopyRequest.Parent();
         parentFolder.id = targetFolderId;
         copyBody.parent = parentFolder;
         copyRequest.setBody(JSON.serialize(copyBody));

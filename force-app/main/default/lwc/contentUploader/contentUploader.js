@@ -6,14 +6,14 @@ import getVFOrigin from '@salesforce/apex/BoxElementsController.getVFOrigin';
 
 
 export default class ContentUploader extends LightningElement {
+    @api elementTitle;
     @api objectApiName;
-    @api recordId
+    @api recordId;
     @api height;
-    @api folderId;
     @api scopes;
+    @api folderId;
     @api buieURL;
     @api downscopedToken;
-
 
     error;
 

@@ -2,6 +2,7 @@ import { LightningElement, api } from 'lwc';
 import downscopeToken from '@salesforce/apex/BoxElementsController.downscopeToken';
 
 export default class ContentExplorer extends LightningElement {
+    @api elementTitle;
     @api recordId
     @api height;
     @api folderId;
@@ -16,7 +17,7 @@ export default class ContentExplorer extends LightningElement {
         downscopeToken({
             resourceType: 'folders',
             recordId: this.recordId,
-            folderId: this.folderId,
+            boxItemId: this.folderId,
             scopes: this.scopes,
         })
         .then(responseMap => {

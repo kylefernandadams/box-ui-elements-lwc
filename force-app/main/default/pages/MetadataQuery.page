@@ -1,0 +1,121 @@
+<apex:page lightningStylesheets="true" controller="BoxElementsController">
+    <apex:slds />
+    <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/explorer.js')}" />
+    <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/explorer.css')}" />
+    
+    <!-- This does NOT work-->
+    <apex:includeScript value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/preview.js')}" />
+    <apex:stylesheet value="{!URLFOR('https://cdn01.boxcdn.net/platform/elements/17.1.0/en-US/preview.css')}" />
+
+    <!-- This works --> 
+    <apex:includeScript value="{!URLFOR($Resource.annotations, '/annotations.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.annotations, '/annotations.css')}" />
+    <body style="height: 415px" onload="init()" />       
+    
+    <script type="text/javascript">
+        function init() {
+            const folderId = '{!$CurrentPage.parameters.folderId}';
+            console.log('VF - Found folder id: ', folderId);
+
+            const downscopedToken = '{!$CurrentPage.parameters.downscopedToken}';
+            console.log('VF - Found token: ', downscopedToken);
+
+            const from = '{!$CurrentPage.parameters.from}';
+            console.log('VF - Found from: ', from);
+
+            const fields = JSON.parse('{!$CurrentPage.parameters.fields}');
+            console.log('VF - Found fields: ', fields);
+
+            const query = '{!$CurrentPage.parameters.query}';
+            console.log('VF - Found query: ', query);
+
+            const queryParams = JSON.parse('{!$CurrentPage.parameters.queryParams}');
+            console.log('VF - Found queryParams: ', queryParams);
+
+            const orderBy = JSON.parse('{!$CurrentPage.parameters.orderBy}');
+            console.log('VF - Found orderBy: ', orderBy);
+
+            const fieldsToShow = JSON.parse('{!$CurrentPage.parameters.fieldsToShow}');        
+            console.log('VF - Found fieldsToShow: ', fieldsToShow);
+
+
+            if(folderId === 'underfined') {
+                folderId = 0;
+            }
+
+            let metadataQuery;
+            if(queryParams === 'undefined') {
+                metadataQuery = {
+                    from: from,
+                    query: query,
+                    fields: fields,
+                    ancestor_folder_id: folderId,
+                    order_by: orderBy
+                };
+            } else {
+                metadataQuery = {
+                    from: from,
+                    query: query,
+                    query_params: queryParams,
+                    fields: fields,
+                    ancestor_folder_id: folderId,
+                    order_by: orderBy
+                };
+            }
+            console.log('VF - Using metadata query: ', metadataQuery);
+            
+            // Instantiate Content Explorer UI Element
+            const explorerContainer = document.querySelector('#explorer-container')
+            const explorer = new Box.ContentExplorer();
+            const logoUrl = "{!URLFOR($Resource.logos, '/box.png')}";
+            const boxAnnotations = new BoxAnnotations();
+
+            explorer.show(folderId, downscopedToken, {
+                container: explorerContainer,
+                logoUrl: logoUrl,
+                autoFocus: true,
+                defaultView: 'metadata',
+                metadataQuery: metadataQuery,
+                fieldsToShow: fieldsToShow,
+                canPreview: true,
+                canDownload: true,
+                canUpload: true,
+                canCreateNewFolder: true,
+                canDelete: true,
+                canRename: true,
+                canShare: true,
+                canSetShareAccess: true,
+                contentPreviewProps: {
+                    boxAnnotations: boxAnnotations,
+                    showAnnotations: true,
+                    showDownload: true,
+                    enableAnnotationsDiscoverability: true,
+                    enableAnnotationsImageDiscoverability: true,
+                    showAnnotationsControls: true,
+                    showAnnotationsDrawingCreate: true,
+                    contentSidebarProps: {
+                        detailsSidebarProps: {
+                            hasAccessStats: true,
+                            hasClassification: true,
+                            hasNotices: true,
+                            hasProperties: true,
+                            hasRetentionPolicy: true,
+                            hasVersions: true,
+                        },
+                        hasActivityFeed: true,
+                        hasMetadata: true,
+                        hasSkills: true,
+                        hasVersions: true,
+                        features: {
+                            activityFeed: {
+                                annotations: {
+                                    enabled: true
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</apex:page>

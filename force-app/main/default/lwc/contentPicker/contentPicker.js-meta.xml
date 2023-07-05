@@ -11,7 +11,8 @@
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
-            <property name="height" label="Height" type="String" default="625px"/>
+            <property name="elementTitle" label="Title" type="String" default="Box Content Picker"/>
+            <property name="height" label="Height" type="String" default="525px"/>
             <property name="recordId" label="Record ID" type="String" default="{recordId}" />
             <property
                     name="folderId"
@@ -35,7 +36,8 @@
                 />
         </targetConfig>
             <targetConfig targets="lightningCommunity__Default">
-                <property name="height" label="Height" type="String" default="625px"/>
+                <property name="elementTitle" label="Title" type="String" default="Box Content Picker"/>
+                <property name="height" label="Height" type="String" default="525px"/>
                 <property
                     name="recordId"
                     type="String"
@@ -58,7 +60,8 @@
                 />
             </targetConfig>
             <targetConfig targets="lightning__FlowScreen">
-                <property name="height" label="Height" type="String" default="625px"/>
+                <property name="elementTitle" label="Title" type="String" default="Box Content Picker"/>
+                <property name="height" label="Height" type="String" default="525px"/>
                 <property
                     name="recordId"
                     type="String"
