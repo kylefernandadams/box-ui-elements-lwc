@@ -13,18 +13,19 @@ The Box UI Elements LWC project provides sample code to illustrate wrapping Box 
 5. Manual create a folder from a given sample record
 6. Open the source from this repo in VS Code.
 7. Create a [Custom Box App](https://developer.box.com/guides/authentication/client-credentials/) with Client Credentials Auth
-8. In Salesforce Setup, go to Custom Metadata Types and create a new record for Box Client Credentials Grant.
+8. Share any applicable files/folder access with the Custom Box App's Service Account user found under the General Settings > Service Account Info page of the Custom App
+9. In Salesforce Setup, go to Custom Metadata Types and create a new record for Box Client Credentials Grant. For "Box Subject Type" select Enterprise and for the Subject ID use your Box Account's Enterprise ID found on the General Settings tab of your Custom App.
    > Note: This will use the client id and client secret from the previous step.
-9.  In VS Code, use the cmd+shift+p shortcut and select SFDX: Authorize Org
-10. Confirm you've successfully authorized your org by listing orgs and their associated status:
+10.  In VS Code, use the cmd+shift+p shortcut and select SFDX: Authorize Org
+11. Confirm you've successfully authorized your org by listing orgs and their associated status:
 ```
 sfdx force:org:list
 ```
-1.  List the installed packaged for your org:
+List the installed packaged for your org:
 ```
 sfdx force:package:installed:list -u <username@domain.com>
 ```
-1.   Deploy you project source to either you scratch org or developer org in the next section.
+Deploy you project source to either you scratch org or developer org in the next section.
 
 ## Deploy to your Org
 Push to Scratch Org:
