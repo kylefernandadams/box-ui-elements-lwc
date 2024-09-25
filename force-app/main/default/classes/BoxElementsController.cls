@@ -15,18 +15,7 @@ public with sharing class BoxElementsController {
         string vfOrigin = '';
         string baseURL = URL.getOrgDomainUrl().toExternalForm(); // Expected Format = https://domain.my.salesforce.com
 
-        // Expected Format for DE, Sandbox & Production ORgs = https://domain--c.visualforce.com
         vfOrigin = baseURL.split('.my.')[0] + '--c.' + 'visualforce.com';
-
-        /* ********* Below odd Discrepancy was found while implementing this in a Trailhead Playground ***********
-        Organization oOrg = [SELECT InstanceName, IsSandbox, OrganizationType FROM Organization LIMIT 1];
-        if(oOrg.OrganizationType == 'Developer Edition'){
-        // Expected Format for Trailhead Playground DE Org = https://domain--c.ap4.visual.force.com
-        vfOrigin = baseURL.split('.my.')[0]+'--c.'+oOrg.InstanceName.toLowercase()+'.visual.force.com';
-        } else {
-        // Expected Format for personal DE, Sandbox & Production Orgs = https://domain--c.visualforce.com
-        vfOrigin = baseURL.split('.my.')[0]+'--c.'+'visualforce.com';
-        }  */
 
         return vfOrigin;
     }
