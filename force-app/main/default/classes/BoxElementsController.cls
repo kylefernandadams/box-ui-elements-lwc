@@ -8,7 +8,7 @@ public with sharing class BoxElementsController {
 
     
 
-    public string ltnOrigin {get{ return URL.getOrgDomainUrl().toExternalForm().split('\\.')[0] + '.develop.lightning.force.com';} set;}
+    public string ltnOrigin {get{ return URL.getOrgDomainUrl().toExternalForm().split('\\.')[0] + '.lightning.force.com';} set;}
 
     @AuraEnabled(cacheable = true)
     public static string getVFOrigin() {
@@ -39,8 +39,7 @@ public with sharing class BoxElementsController {
         System.debug('Found boxItemId: ' + boxItemId);
         System.debug('Found resource type: ' + resourceType);
         System.debug('Found scopes: ' + scopes);
-        String ltnOrigin = URL.getOrgDomainUrl().toExternalForm().split('\\.')[0] + '.develop.lightning.force.com';
-        // String ltnOrigin = URL.getOrgDomainUrl().toExternalForm().split('\\.')[0] + '.my.site.com';
+        String ltnOrigin = URL.getOrgDomainUrl().toExternalForm().split('\\.')[0] + '.lightning.force.com';
 
         System.debug('Ltn origin: ' + ltnOrigin);
 
